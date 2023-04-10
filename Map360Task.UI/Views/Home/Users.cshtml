@@ -1,0 +1,315 @@
+﻿@using Map360Task.Domain.Entities
+@model User
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="text-center pt-3" id="result"></div>
+<button type="button" id="btngetuser" class="btn btn-primary">Kullanıcı Listesi</button>
+<div class="float-end">
+    <input id="name" placeholder="Kullanıcı ismi giriniz..." />
+    <button type="button" id="btngetbyname" class="btn btn-primary">Kullanıcı Ara</button>
+</div>
+
+<br />
+<br />
+<div class="row">
+    <form class="col-md-2 form-group border border-top-0 border-bottom-0" id="user-form">
+        <h1>Yeni Ekle</h1>
+        <label>İsim</label>
+        <input class="form-control" asp-for="Name" type="text" id="addusername" placeholder="Muhammet" />
+        <span asp-validation-for="Name" class="text-danger d-flex"></span>
+        <label>Soyisim</label>
+        <input class="form-control" asp-for="Surname" type="text" id="addusersurname" placeholder="Okumus" />
+        <span asp-validation-for="Surname" class="text-danger d-flex"></span>
+        <label>Email</label>
+        <input class="form-control" asp-for="Email" type="email" id="adduseremail" placeholder="birisi@gmail.com" />
+        <span asp-validation-for="Email" class="text-danger d-flex"></span>
+        <label>Şirket</label>
+        <select class="form-control" asp-for="CompanyId" id="addcompany"></select>
+        <span asp-validation-for="CompanyId" class="text-danger d-flex"></span>
+        <label>Rol</label>
+        <select class="form-control" asp-for="RoleId" id="addrole">
+        </select>
+        <span asp-validation-for="RoleId" class="text-danger d-flex"></span>
+        <br />
+        <button type="submit" id="btnadd" class="float-end btn btn-primary">Ekle</button>
+    </form>
+    <div id="listUser" class="col-md-8">
+    </div>
+    <form class="col-md-2 form-group border border-top-0 border-bottom-0" id="update-form">
+        <h1>Düzenle</h1>
+        <label>Id</label>
+        <input asp-for="Id" class="form-control" type="number" id="updateuserid" />
+        <span asp-validation-for="Id" class="text-danger d-flex"></span>
+        <label>İsim</label>
+        <input class="form-control" asp-for="Name" type="text" id="updateusername" placeholder="Muhammet" />
+        <span asp-validation-for="Name" class="text-danger d-flex"></span>
+        <label>Soyisim</label>
+        <input class="form-control" asp-for="Surname" type="text" id="updateusersurname" placeholder="Okumus" />
+        <span asp-validation-for="Surname" class="text-danger d-flex"></span>
+        <label>Email</label>
+        <input class="form-control" asp-for="Email" type="email" id="updateuseremail" placeholder="birisi@gmail.com" />
+        <span asp-validation-for="Email" class="text-danger d-flex"></span>
+        <label>Şirket</label>
+        <select class="form-control" asp-for="CompanyId" id="updatecompany"></select>
+        <span asp-validation-for="CompanyId" class="text-danger d-flex"></span>
+        <label>Rol</label>
+        <select class="form-control" asp-for="RoleId" id="updaterole">
+        </select>
+        <span asp-validation-for="RoleId" class="text-danger d-flex"></span>
+        <br />
+        <button type="submit" id="btnupdate" class="float-end btn btn-primary">Güncelle</button>
+    </form>
+</div>
+
+@section Scripts
+    {
+    <script>
+        $(document).ready(function () {
+            let successResult = `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                                                    <strong>İşlem başarılı!</strong>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                </div>`;
+            let errorResult = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                            <strong>İşlem başarısız!</strong>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                        </div>`;
+            $.ajax({
+                contentType: "application/json",
+                dataType: "json",
+                type: "Get",
+                url: "/Home/ListCompany",
+                success: function (f) {
+                    let companies = JSON.parse(f);
+
+                    let optionsHtml = "";
+                    optionsHtml += `<option value="" selected>Lütfen Seçin</option>`
+                    if (companies != null) {
+                        $.each(companies, (index, value) => {
+                            let companyName = JSON.parse(value.name).Name;
+                            optionsHtml += `<option value="${value.id}">${companyName}</option>`;
+                        });
+                    }
+                    $("#addcompany").html(optionsHtml);
+                    $("#updatecompany").html(optionsHtml);
+                }
+            });
+
+            $.ajax({
+                contentType: "application/json",
+                dataType: "json",
+                type: "Get",
+                url: "/Home/ListRole",
+                success: function (f) {
+                    let roles = jQuery.parseJSON(f);
+                    let optionsHtml2 = "";
+                    optionsHtml2 += `<option value="" selected>Lütfen Seçin</option>`
+                    if (roles != null) {
+                        $.each(roles, (index, value) => {
+                            optionsHtml2 += `<option value="${value.id}">${value.name}</option>`;
+                        });
+                    }
+                    $("#addrole").html(optionsHtml2);
+                    $("#updaterole").html(optionsHtml2);
+                }
+            });
+
+            $("#btngetuser").click(
+                function () {
+                    $("#listUser").empty();
+                    $.ajax({
+                        contentType: "application/json",
+                        dataType: "json",
+                        type: "Get",
+                        url: "/Home/ListUser",
+                        success: function (f) {
+                            let users = JSON.parse(f);
+                            users.sort(function (a, b) {
+                                return a.id - b.id;
+                            });
+                            let tablehtml = `<table class="table table-bordered"> <tr> <th>Id</th>  <th>İsim</th> <th>Soyisim</th> <th>Email</th> <th>Şirket</th> <th>Rol</th> <th>Sil</th> </tr>`;
+                            if (users != null) {
+                                $.each(users, (index, value) => {
+                                    var username = JSON.parse(value.name).Name;
+                                    var surname = JSON.parse(value.surname).Surname;
+                                    var email = JSON.parse(value.email).Email;
+                                    var companyname = JSON.parse(value.company.name).Name;
+                                    tablehtml += `<tr><td>${value.id}</td> <td>${username}</td> <td>${surname}</td> <td>${email}</td> <td>${companyname}</td> <td>${value.role.name}</td> <td><button type="button" id="btndelete" class="btn btn-danger" data-id="${value.id}">Sil</button></td></tr>`
+                                });
+                            }
+                            tablehtml += `</table>`;
+                            $("#listUser").html(tablehtml);
+                        }
+                    });
+                });
+
+            $("#btngetbyname").click(x => {
+                let username = $("#name").val();
+                if (username.trim() === "") {
+                    $("#result").html(errorResult);
+                    return;
+                };
+                $.ajax({
+                    contentType: "application/json",
+                    dataType: "json",
+                    type: "Get",
+                    url: "/Home/ListUser",
+                    success: function (f) {
+                        let users = JSON.parse(f);
+                        let tablehtml = `<table class="table table-bordered"> <tr> <th>Id</th>  <th>İsim</th> <th>Soyisim</th> <th>Email</th> <th>Şirket</th> <th>Rol</th> <th>Sil</th> </tr>`;
+                        if (users != null) {
+                            $.each(users, (index, value) => {
+                                var uname = JSON.parse(value.name).Name;
+                                var surname = JSON.parse(value.surname).Surname;
+                                var email = JSON.parse(value.email).Email;
+                                var companyname = JSON.parse(value.company.name).Name;
+                                if (uname.toLowerCase().includes(username.toLowerCase())) {
+                                    tablehtml += `<tr><td>${value.id}</td> <td>${uname}</td> <td>${surname}</td> <td>${email}</td> <td>${companyname}</td> <td>${value.role.name}</td> <td><button type="button" id="btndelete" class="btn btn-danger" data-id="${value.id}">Sil</button></td></tr>`
+                                }
+                            });
+                        }
+                        tablehtml += `</table>`;
+                        $("#listUser").html(tablehtml);
+                    }
+                })
+            });
+
+            $("#listUser").on("click", "#btndelete", function (event) {
+                let id = $(this).data("id");
+                $.ajax({
+                    url: "/Home/DeleteUser/" + id,
+                    type: "post",
+                    dataType: "json",
+                    success: function (f) {
+                        $("#result").html(successResult);
+                        $.ajax({
+                            contentType: "application/json",
+                            dataType: "json",
+                            type: "Get",
+                            url: "/Home/ListUser",
+                            success: function (f) {
+                                let users = JSON.parse(f);
+                                users.sort(function (a, b) {
+                                    return a.id - b.id;
+                                });
+                                let tablehtml = `<table class="table table-bordered"> <tr> <th>Id</th>  <th>İsim</th> <th>Soyisim</th> <th>Email</th> <th>Şirket</th> <th>Rol</th> <th>Sil</th> </tr>`;
+                                if (users != null) {
+                                    $.each(users, (index, value) => {
+                                        var username = JSON.parse(value.name).Name;
+                                        var surname = JSON.parse(value.surname).Surname;
+                                        var email = JSON.parse(value.email).Email;
+                                        var companyname = JSON.parse(value.company.name).Name;
+                                        tablehtml += `<tr><td>${value.id}</td> <td>${username}</td> <td>${surname}</td> <td>${email}</td> <td>${companyname}</td> <td>${value.role.name}</td> <td><button type="button" id="btndelete" class="btn btn-danger" data-id="${value.id}">Sil</button></td></tr>`
+                                    });
+                                }
+                                tablehtml += `</table>`;
+                                $("#listUser").html(tablehtml);
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        $("#result").html(errorResult);
+                    }
+                });
+            });
+
+            $("#user-form").submit(function (e) {
+                e.preventDefault();
+                let user = {
+                    Name: $("#addusername").val(),
+                    Surname: $("#addusersurname").val(),
+                    Email: $("#adduseremail").val(),
+                    RoleId: $("#addrole").val(),
+                    CompanyId: $("#addcompany").val(),
+                };
+                $.ajax({
+                    type: "post",
+                    url: "/Home/AddUser",
+                    data: user,
+                    success: function (f) {
+                        $("#result").html(successResult);
+                        $("#user-form :input").val("");
+                        $.ajax({
+                            contentType: "application/json",
+                            dataType: "json",
+                            type: "Get",
+                            url: "/Home/ListUser",
+                            success: function (f) {
+                                let users = JSON.parse(f);
+                                users.sort(function (a, b) {
+                                    return a.id - b.id;
+                                });
+                                let tablehtml = `<table class="table table-bordered"> <tr> <th>Id</th>  <th>İsim</th> <th>Soyisim</th> <th>Email</th> <th>Şirket</th> <th>Rol</th> <th>Sil</th> </tr>`;
+                                if (users != null) {
+                                    $.each(users, (index, value) => {
+                                        var username = JSON.parse(value.name).Name;
+                                        var surname = JSON.parse(value.surname).Surname;
+                                        var email = JSON.parse(value.email).Email;
+                                        var companyname = JSON.parse(value.company.name).Name;
+                                        tablehtml += `<tr><td>${value.id}</td> <td>${username}</td> <td>${surname}</td> <td>${email}</td> <td>${companyname}</td> <td>${value.role.name}</td> <td><button type="button" id="btndelete" class="btn btn-danger" data-id="${value.id}">Sil</button></td></tr>`
+                                    });
+                                }
+                                tablehtml += `</table>`;
+                                $("#listUser").html(tablehtml);
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        $("#result").html(errorResult);
+                    }
+                });
+            });
+
+            $("#update-form").submit(function (e) {
+                e.preventDefault();
+                let user =
+                {
+                    Id: $("#updateuserid").val(),
+                    Name: $("#updateusername").val(),
+                    Surname: $("#updateusersurname").val(),
+                    Email: $("#updateuseremail").val(),
+                    RoleId: $("#updaterole").val(),
+                    CompanyId: $("#updatecompany").val(),
+                };
+                $.ajax({
+                    type: "post",
+                    url: "/Home/UpdateUser",
+                    data: user,
+                    success: function (f) {
+                        $("#result").html(successResult);
+                        $("#update-form :input").val("");
+                        $.ajax({
+                            contentType: "application/json",
+                            dataType: "json",
+                            type: "Get",
+                            url: "/Home/ListUser",
+                            success: function (f) {
+                                let users = JSON.parse(f);
+                                users.sort(function (a, b) {
+                                    return a.id - b.id;
+                                });
+                                let tablehtml = `<table class="table table-bordered"> <tr> <th>Id</th>  <th>İsim</th> <th>Soyisim</th> <th>Email</th> <th>Şirket</th> <th>Rol</th> <th>Sil</th> </tr>`;
+                                if (users != null) {
+                                    $.each(users, (index, value) => {
+                                        var username = JSON.parse(value.name).Name;
+                                        var surname = JSON.parse(value.surname).Surname;
+                                        var email = JSON.parse(value.email).Email;
+                                        var companyname = JSON.parse(value.company.name).Name;
+                                        tablehtml += `<tr><td>${value.id}</td> <td>${username}</td> <td>${surname}</td> <td>${email}</td> <td>${companyname}</td> <td>${value.role.name}</td> <td><button type="button" id="btndelete" class="btn btn-danger" data-id="${value.id}">Sil</button></td></tr>`
+                                    });
+                                }
+                                tablehtml += `</table>`;
+                                $("#listUser").html(tablehtml);
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        $("#result").html(errorResult);
+                    }
+                })
+            })
+        });
+
+    </script>
+}

@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{877E3291-4E1F-4401-B175-D852F9A1C350}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{A8766D8F-CD07-4848-B540-5650EAF5FE39}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{D4640DB9-AA4C-45D7-881D-9335E41422CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Map360Task.Application", "Map360Task.Application\Map360Task.Application.csproj", "{D49F9453-BA67-49B7-93CB-87B88B20426B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Map360Task.Domain", "Map360Task.Domain\Map360Task.Domain.csproj", "{A6635C99-7493-41C8-81B1-552B41A0CFAE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Map360Task.UI", "Map360Task.UI\Map360Task.UI.csproj", "{CC94B4AB-2ED4-45BB-91E0-5185749DB081}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Map360Task.API", "Map360Task.API\Map360Task.API.csproj", "{599C4DB3-531E-479F-B55A-1CCFD8CF0DC6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Map360Task.Persistence", "Map360Task.Persistence\Map360Task.Persistence.csproj", "{DD4FEE31-52FC-4988-8AA8-F5D1709FA98A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D49F9453-BA67-49B7-93CB-87B88B20426B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D49F9453-BA67-49B7-93CB-87B88B20426B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D49F9453-BA67-49B7-93CB-87B88B20426B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D49F9453-BA67-49B7-93CB-87B88B20426B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6635C99-7493-41C8-81B1-552B41A0CFAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6635C99-7493-41C8-81B1-552B41A0CFAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6635C99-7493-41C8-81B1-552B41A0CFAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6635C99-7493-41C8-81B1-552B41A0CFAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC94B4AB-2ED4-45BB-91E0-5185749DB081}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC94B4AB-2ED4-45BB-91E0-5185749DB081}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC94B4AB-2ED4-45BB-91E0-5185749DB081}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC94B4AB-2ED4-45BB-91E0-5185749DB081}.Release|Any CPU.Build.0 = Release|Any CPU
+		{599C4DB3-531E-479F-B55A-1CCFD8CF0DC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{599C4DB3-531E-479F-B55A-1CCFD8CF0DC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{599C4DB3-531E-479F-B55A-1CCFD8CF0DC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{599C4DB3-531E-479F-B55A-1CCFD8CF0DC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD4FEE31-52FC-4988-8AA8-F5D1709FA98A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD4FEE31-52FC-4988-8AA8-F5D1709FA98A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD4FEE31-52FC-4988-8AA8-F5D1709FA98A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD4FEE31-52FC-4988-8AA8-F5D1709FA98A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D49F9453-BA67-49B7-93CB-87B88B20426B} = {877E3291-4E1F-4401-B175-D852F9A1C350}
+		{A6635C99-7493-41C8-81B1-552B41A0CFAE} = {877E3291-4E1F-4401-B175-D852F9A1C350}
+		{CC94B4AB-2ED4-45BB-91E0-5185749DB081} = {D4640DB9-AA4C-45D7-881D-9335E41422CF}
+		{599C4DB3-531E-479F-B55A-1CCFD8CF0DC6} = {D4640DB9-AA4C-45D7-881D-9335E41422CF}
+		{DD4FEE31-52FC-4988-8AA8-F5D1709FA98A} = {A8766D8F-CD07-4848-B540-5650EAF5FE39}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DB45B1EE-34E8-49C2-AA22-151184E4B0B9}
+	EndGlobalSection
+EndGlobal

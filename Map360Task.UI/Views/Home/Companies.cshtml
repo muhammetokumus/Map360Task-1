@@ -1,0 +1,272 @@
+﻿@using Map360Task.Domain.Entities
+@model Company
+@{
+    ViewData["Title"] = "Companies";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="text-center pt-3" id="result"></div>
+<button type="button" id="btngetlist" class="btn btn-primary">Şirket Listesi</button>
+<div class="float-end">
+    <input id="name" placeholder="Şirket ismi giriniz..." />
+    <button type="button" id="btngetbyname" class="btn btn-primary">Şirket Ara</button>
+</div>
+
+<br />
+<br />
+<div class="row">
+    <form class="col-md-2 form-group border border-top-0 border-bottom-0" id="company-form">
+        <h1>Yeni Ekle</h1>
+        <label>İsim</label>
+        <input asp-for="Name" class="form-control" type="text" id="companyname" />
+        <span asp-validation-for="Name" class="text-danger d-flex"></span>
+        <label>Vergi No</label>
+        <input class="form-control" asp-for="TaxNumber" type="number" id="taxnumber" />
+        <span asp-validation-for="TaxNumber" class="text-danger d-flex"></span>
+        <label>Telefon</label>
+        <input class="form-control" asp-for="PhoneNumber" type="number" id="phonenumber" />
+        <span asp-validation-for="PhoneNumber" class="text-danger d-flex"></span>
+        <label>Adres</label>
+        <input class="form-control" asp-for="Address" type="text" id="address" />
+        <span asp-validation-for="Address" class="text-danger d-flex"></span>
+        <br />
+        <button type="submit" id="btnadd" class="float-end btn btn-primary">Ekle</button>
+    </form>
+    <div id="listCompany" class="col-md-8">
+    </div>
+    <form class="col-md-2 form-group border border-top-0 border-bottom-0" id="update-form">
+        <h1>Düzenle</h1>
+        <label>Id</label>
+        <input class="form-control" asp-for="Id" id="companyid" />
+        <span asp-validation-for="Id" class="text-danger d-flex"></span>
+        <label>İsim</label>
+        <input class="form-control" asp-for="Name" id="updatename" />
+        <span asp-validation-for="Name" class="text-danger d-flex"></span>
+        <label>Vergi No</label>
+        <input class="form-control" asp-for="TaxNumber" type="number" id="updatetaxnumber" />
+        <span asp-validation-for="TaxNumber" class="text-danger d-flex"></span>
+        <label>Telefon</label>
+        <input class="form-control" asp-for="PhoneNumber" type="number" id="updatephonenumber" />
+        <span asp-validation-for="PhoneNumber" class="text-danger d-flex"></span>
+        <label>Adres</label>
+        <input class="form-control" asp-for="Address" id="updateaddress" />
+        <span asp-validation-for="Address" class="text-danger d-flex"></span>
+        <br />
+        <button type="submit" id="btnupdate" class="float-end btn btn-primary">Güncelle</button>
+    </form>
+</div>
+
+@section Scripts
+    {
+    <script>
+        $(document).ready(function () {
+            let successResult = `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                                                                                            <strong>İşlem başarılı!</strong>
+                                                                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                                                        </div>`;
+            let errorResult = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                                                                    <strong>İşlem başarısız!</strong>
+                                                                                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                                                                </div>`;
+            $("#btngetlist").click(
+                function () {
+
+                    $("#listCompany").empty();
+                    $.ajax({
+                        contentType: "application/json",
+                        dataType: "json",
+                        type: "Get",
+                        url: "/Home/ListCompany",
+                        success: function (f) {
+                            let companies = JSON.parse(f);
+                            companies.sort(function (a, b) {
+                                return a.id - b.id;
+                            });
+                            let tablehtml = `<table class="table table-bordered"> <tr> <th>Id</th>  <th>İsim</th> <th>Vergi No</th> <th>Telefon</th> <th>Adres</th> <th>Sil</th> </tr>`;
+                            if (companies != null) {
+                                $.each(companies, (index, value) => {
+                                    let name = JSON.parse(value.name).Name;
+                                    let taxNumber = JSON.parse(value.taxNumber).TaxNumber;
+                                    let phoneNumber = JSON.parse(value.phoneNumber).PhoneNumber;
+                                    let address = JSON.parse(value.address).Address;
+                                    tablehtml += `<tr><td>${value.id}</td> <td>${name}</td> <td>${taxNumber}</td> <td>${phoneNumber}</td> <td>${address}</td> <td><button type="button" id="btndelete" class="btn btn-danger" data-id="${value.id}">Sil</button></td></tr>`
+                                });
+                            }
+                            tablehtml += `</table>`;
+                            $("#listCompany").html(tablehtml);
+                        }
+
+                    });
+                });
+
+            $("#btngetbyname").click(x => {
+                let companyname = $("#name").val();
+                if (companyname.trim() === "") {
+                    $("#result").html(errorResult);
+                    return;
+                };
+                $.ajax({
+                    contentType: "application/json",
+                    dataType: "json",
+                    type: "Get",
+                    url: "/Home/ListCompany",
+                    success: function (f) {
+                        let companies = JSON.parse(f);
+                        let tablehtml = `<table class="table table-bordered"> <tr> <th>Id</th>  <th>İsim</th> <th>Vergi No</th> <th>Telefon</th> <th>Adres</th> <th>Sil</th> </tr>`;
+                        if (companies != null) {
+                            $.each(companies, (index, value) => {
+                                let name = JSON.parse(value.name).Name;
+                                let taxNumber = JSON.parse(value.taxNumber).TaxNumber;
+                                let phoneNumber = JSON.parse(value.phoneNumber).PhoneNumber;
+                                let address = JSON.parse(value.address).Address;
+                                if (name.toLowerCase().includes(companyname.toLowerCase())) {
+                                    tablehtml += `<tr><td>${value.id}</td> <td>${name}</td> <td>${taxNumber}</td> <td>${phoneNumber}</td> <td>${address}</td> <td><button type="button" id="btndelete" class="btn btn-danger" data-id="${value.id}">Sil</button></td></tr>`
+                                }
+                            });
+                        }
+                        tablehtml += `</table>`;
+                        $("#listCompany").html(tablehtml);
+                    }
+                })
+            });
+
+            $("#company-form").submit(function (e) {
+                e.preventDefault();
+                let company = {
+                    Name: $("#companyname").val(),
+                    TaxNumber: $("#taxnumber").val(),
+                    PhoneNumber: $("#phonenumber").val(),
+                    Address: $("#address").val(),
+                };
+                $.ajax({
+                    type: "post",
+                    url: "/Home/AddCompany",
+                    data: company,
+                    success: function (f) {
+                        $("#result").html(successResult);
+                        $("#company-form :input").val("");
+                        $.ajax({
+                            contentType: "application/json",
+                            dataType: "json",
+                            type: "Get",
+                            url: "/Home/ListCompany",
+                            success: function (f) {
+                                let companies = JSON.parse(f);
+                                companies.sort(function (a, b) {
+                                    return a.id - b.id;
+                                });
+                                let tablehtml = `<table class="table table-bordered"> <tr> <th>Id</th>  <th>İsim</th> <th>Vergi No</th> <th>Telefon</th> <th>Adres</th> <th>Sil</th> </tr>`;
+                                if (companies != null) {
+                                    $.each(companies, (index, value) => {
+                                        let name = JSON.parse(value.name).Name;
+                                        let taxNumber = JSON.parse(value.taxNumber).TaxNumber;
+                                        let phoneNumber = JSON.parse(value.phoneNumber).PhoneNumber;
+                                        let address = JSON.parse(value.address).Address;
+                                        tablehtml += `<tr><td>${value.id}</td> <td>${name}</td> <td>${taxNumber}</td> <td>${phoneNumber}</td> <td>${address}</td> <td><button type="button" id="btndelete" class="btn btn-danger" data-id="${value.id}">Sil</button></td></tr>`
+                                    });
+                                }
+                                tablehtml += `</table>`;
+                                $("#listCompany").html(tablehtml);
+                            }
+
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        $("#result").html(errorResult);
+                    }
+                });
+            });
+
+            $("#listCompany").on("click", "#btndelete", function (event) {
+                let id = $(this).data("id");
+                $.ajax({
+                    url: "/Home/DeleteCompany/" + id,
+                    type: "post",
+                    dataType: "json",
+                    success: function (f) {
+                        $("#result").html(successResult);
+                        $.ajax({
+                            contentType: "application/json",
+                            dataType: "json",
+                            type: "Get",
+                            url: "/Home/ListCompany",
+                            success: function (f) {
+                                let companies = JSON.parse(f);
+                                companies.sort(function (a, b) {
+                                    return a.id - b.id;
+                                });
+                                let tablehtml = `<table class="table table-bordered"> <tr> <th>Id</th>  <th>İsim</th> <th>Vergi No</th> <th>Telefon</th> <th>Adres</th> <th>Sil</th> </tr>`;
+                                if (companies != null) {
+                                    $.each(companies, (index, value) => {
+                                        let name = JSON.parse(value.name).Name;
+                                        let taxNumber = JSON.parse(value.taxNumber).TaxNumber;
+                                        let phoneNumber = JSON.parse(value.phoneNumber).PhoneNumber;
+                                        let address = JSON.parse(value.address).Address;
+                                        tablehtml += `<tr><td>${value.id}</td> <td>${name}</td> <td>${taxNumber}</td> <td>${phoneNumber}</td> <td>${address}</td> <td><button type="button" id="btndelete" class="btn btn-danger" data-id="${value.id}">Sil</button></td></tr>`
+                                    });
+                                }
+                                tablehtml += `</table>`;
+                                $("#listCompany").html(tablehtml);
+                            }
+
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        $("#result").html(errorResult);
+                    }
+                });
+            });
+
+            $("#update-form").submit(function (e) {
+                e.preventDefault();
+                let company = {
+                    Id: $("#companyid").val(),
+                    Name: $("#updatename").val(),
+                    TaxNumber: $("#updatetaxnumber").val(),
+                    PhoneNumber: $("#updatephonenumber").val(),
+                    Address: $("#updateaddress").val(),
+                };
+                $.ajax({
+                    type: "post",
+                    url: "/Home/UpdateCompany",
+                    data: company,
+                    success: function (f) {
+                        $("#result").html(successResult);
+                        $("#update-form :input").val("");
+                        $.ajax({
+                            contentType: "application/json",
+                            dataType: "json",
+                            type: "Get",
+                            url: "/Home/ListCompany",
+                            success: function (f) {
+                                let companies = JSON.parse(f);
+                                companies.sort(function (a, b) {
+                                    return a.id - b.id;
+                                });
+                                let tablehtml = `<table class="table table-bordered"> <tr> <th>Id</th>  <th>İsim</th> <th>Vergi No</th> <th>Telefon</th> <th>Adres</th> <th>Sil</th> </tr>`;
+                                if (companies != null) {
+                                    $.each(companies, (index, value) => {
+                                        let name = JSON.parse(value.name).Name;
+                                        let taxNumber = JSON.parse(value.taxNumber).TaxNumber;
+                                        let phoneNumber = JSON.parse(value.phoneNumber).PhoneNumber;
+                                        let address = JSON.parse(value.address).Address;
+                                        tablehtml += `<tr><td>${value.id}</td> <td>${name}</td> <td>${taxNumber}</td> <td>${phoneNumber}</td> <td>${address}</td> <td><button type="button" id="btndelete" class="btn btn-danger" data-id="${value.id}">Sil</button></td></tr>`
+                                    });
+                                }
+                                tablehtml += `</table>`;
+                                $("#listCompany").html(tablehtml);
+                            }
+
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        $("#result").html(errorResult);
+                    }
+                });
+            });
+
+        });
+    </script>
+}
+
+
+
